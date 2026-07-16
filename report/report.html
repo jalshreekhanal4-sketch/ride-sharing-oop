@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ride Sharing System OOP Report</title>
+<style>
+  @page { size: Letter; margin: 1in; }
+  * { box-sizing: border-box; }
+  html, body {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+    color: #000;
+    line-height: 2;
+    margin: 0;
+    padding: 0;
+  }
+  .page {
+    page-break-after: always;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  /* ---------- Title page ---------- */
+  .titlepage {
+    padding-top: 2.6in;
+    text-align: center;
+  }
+  .titlepage p {
+    text-align: center;
+    text-indent: 0;
+    margin: 0;
+  }
+  .titlepage .title { font-weight: bold; margin-bottom: 0.7in; }
+  .titlepage .line { margin: 0; }
+
+  /* ---------- Headings ---------- */
+  h1.doctitle {
+    font-size: 12pt;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 0 0 0;
+  }
+  h2 {
+    font-size: 12pt;
+    font-weight: bold;
+    text-align: center;
+    margin: 0;
+  }
+  p { margin: 0 0 0 0; text-indent: 0.5in; text-align: left; }
+  p.noindent { text-indent: 0; }
+
+  /* ---------- References ---------- */
+  .refs p { text-indent: -0.5in; padding-left: 0.5in; margin: 0; }
+
+  /* ---------- Figures ---------- */
+  .figure-block { page-break-before: always; text-align: center; }
+  .figure-caption-num { font-weight: bold; margin: 0; text-indent: 0; text-align: left; }
+  .figure-caption-title { font-style: italic; margin: 0 0 0.15in 0; text-indent: 0; text-align: left; }
+  .figure-block img { max-width: 6.5in; width: 100%; height: auto; display: block; margin: 0 auto; }
+  .figure-note { text-align: left; text-indent: 0; font-size: 11pt; line-height: 1.5; margin-top: 0.15in; }
+
+  a { color: #000; }
+</style>
+</head>
+<body>
+
+<!-- ===================== TITLE PAGE ===================== -->
+<section class="page titlepage">
+  <p class="title line">Object-Oriented Programming in Practice: A Ride Sharing<br>System in C++ and Smalltalk</p>
+  <p class="line noindent" style="text-indent:0;">Jalshree Khanal</p>
+  <p class="line noindent" style="text-indent:0;">[Institution Name]</p>
+  <p class="line noindent" style="text-indent:0;">[Course Name]</p>
+  <p class="line noindent" style="text-indent:0;">[Instructor Name]</p>
+  <p class="line noindent" style="text-indent:0;">July 15, 2026</p>
+</section>
+
+<!-- ===================== BODY ===================== -->
+<section class="page">
+  <h1 class="doctitle">Object-Oriented Programming in Practice: A Ride Sharing System in C++ and Smalltalk</h1>
+
+  <p class="noindent">&nbsp;</p>
+  <p>This report describes a Ride Sharing System implemented twice&mdash;once in C++ and once in GNU Smalltalk&mdash;to demonstrate three core object-oriented programming (OOP) principles: encapsulation, inheritance, and polymorphism. Both versions share an identical design: a base <em>Ride</em> class; three subclasses, <em>StandardRide</em>, <em>PremiumRide</em>, and <em>SharedRide</em>, each pricing trips differently; a <em>Driver</em> class that accumulates completed rides; and a <em>Rider</em> class that accumulates requested rides. A short demonstration program stores several ride objects of different subclasses in one collection and calls <code>fare()</code> and <code>rideDetails()</code> on each polymorphically. The full source code, a build/run README, and execution screenshots are available at the project's GitHub repository: https://github.com/jalshreekhanal4-sketch/ride-sharing-oop.</p>
+
+  <h2>Encapsulation</h2>
+  <p>C++ hides state using access specifiers: <em>Ride</em> keeps its fields <code>protected</code>, and <em>Driver</em> and <em>Rider</em> keep their ride lists (<code>assignedRides</code>, <code>requestedRides</code>) <code>private</code>, exposing them only through methods such as <code>addRide()</code> and <code>getDriverInfo()</code>. Encapsulation is therefore something the programmer must actively declare (Stroustrup, 2013). Smalltalk enforces the same guarantee unconditionally: an instance variable such as <code>assignedRides</code> is never visible outside the object at all, since the only way to interact with a Smalltalk object is by sending it a message (Goldberg &amp; Robson, 1983). Encapsulation is not a stylistic choice in Smalltalk; it is a property of the object model itself.</p>
+
+  <h2>Inheritance</h2>
+  <p>C++ expresses inheritance with the <code>class Derived : public Base</code> syntax, and subclass constructors explicitly forward shared state to the base constructor&mdash;for example, <em>StandardRide</em>'s constructor delegates to <code>Ride(rideID, pickup, dropoff, distance)</code> in its initializer list. Smalltalk expresses the same relationship through a class-creation message sent to the superclass, <code>Ride subclass: #StandardRide ...</code>, reflecting Smalltalk's more dynamic style, in which even class definitions are messages sent to existing objects (Goldberg &amp; Robson, 1983). Both implementations produce an identical single-inheritance hierarchy rooted at <em>Ride</em>.</p>
+
+  <h2>Polymorphism</h2>
+  <p>C++ requires <code>fare()</code> and <code>rideDetails()</code> to be declared <code>virtual</code> in the base class, with <code>fare()</code> as a pure virtual function, enabling dynamic dispatch when objects are accessed through a <code>std::shared_ptr&lt;Ride&gt;</code> (Stroustrup, 2013). Iterating over a vector of such pointers and calling <code>ride-&gt;fare()</code> invokes the correct override for each concrete subclass at runtime. Smalltalk has no <code>virtual</code> keyword because every method call is a dynamically dispatched message by default: sending <code>fare</code> to any <em>Ride</em> causes the runtime to look up the method starting at the receiver's actual class (Free Software Foundation, 2023). <em>StandardRide</em>, <em>PremiumRide</em>, and <em>SharedRide</em> each simply define their own <code>fare</code> method, and polymorphism follows automatically.</p>
+
+  <h2>Discussion</h2>
+  <p>The comparison highlights a difference in philosophy rather than capability. C++ is statically typed and compiled, so it makes OOP guarantees opt-in and enforces them at compile time, giving the programmer fine-grained control over which behaviors are polymorphic, encapsulated, or inherited. Smalltalk is dynamically typed and purely message-based, so the same guarantees are unconditional consequences of its object model. Despite this difference, both languages arrive at the same object-oriented design for the Ride Sharing System, suggesting that encapsulation, inheritance, and polymorphism are language-independent concepts whose enforcement mechanisms simply differ.</p>
+
+  <h2>Conclusion</h2>
+  <p>Implementing the same Ride Sharing System in C++ and Smalltalk shows that encapsulation, inheritance, and polymorphism can be realized through different mechanisms while producing equivalent designs: C++ favors explicit, compiler-checked declarations, while Smalltalk favors implicit guarantees built into a pure message-passing object model.</p>
+</section>
+
+<!-- ===================== REFERENCES ===================== -->
+<section class="page refs">
+  <h2 style="margin-bottom:0.3in;">References</h2>
+  <p>Free Software Foundation. (2023). <em>GNU Smalltalk user's guide</em>. https://www.gnu.org/software/smalltalk/manual-base/html_node/</p>
+  <p>Goldberg, A., &amp; Robson, D. (1983). <em>Smalltalk-80: The language and its implementation</em>. Addison-Wesley.</p>
+  <p>Stroustrup, B. (2013). <em>The C++ programming language</em> (4th ed.). Addison-Wesley.</p>
+</section>
+
+<!-- ===================== APPENDIX: SCREENSHOTS ===================== -->
+<section style="page-break-before: always;">
+  <h2 style="margin-bottom:0.4in;">Appendix: Code and Sample Output</h2>
+</section>
+
+<div class="figure-block" style="page-break-before: avoid;">
+  <p class="figure-caption-num">Figure 1</p>
+  <p class="figure-caption-title">C++ &mdash; Ride Base Class and StandardRide / PremiumRide Subclasses</p>
+  <img src="../screenshots/cpp_code.png" alt="C++ Ride base class and subclasses source code">
+  <p class="figure-note">Note. Shows encapsulated fields (protected), the pure virtual <code>fare()</code> declared in <em>Ride</em>, and each subclass's overridden <code>fare()</code>/<code>rideDetails()</code> (inheritance and polymorphism).</p>
+</div>
+
+<div class="figure-block">
+  <p class="figure-caption-num">Figure 2</p>
+  <p class="figure-caption-title">C++ &mdash; Driver Class Demonstrating Encapsulation</p>
+  <img src="../screenshots/driver_code.png" alt="C++ Driver class source code">
+  <p class="figure-note">Note. <code>assignedRides</code> is private and reachable only through <code>addRide()</code> and <code>getDriverInfo()</code>; <code>totalEarnings()</code> and <code>getDriverInfo()</code> call <code>ride-&gt;fare()</code> and <code>ride-&gt;rideDetails()</code> polymorphically.</p>
+</div>
+
+<div class="figure-block">
+  <p class="figure-caption-num">Figure 3</p>
+  <p class="figure-caption-title">C++ &mdash; Sample Program Output</p>
+  <img src="../screenshots/cpp_output.png" alt="C++ program terminal output">
+  <p class="figure-note">Note. Output of <code>./RideSharingSystem</code>, showing polymorphic <code>fare()</code>/<code>rideDetails()</code> results for all ride types, driver earnings, and rider history.</p>
+</div>
+
+<div class="figure-block">
+  <p class="figure-caption-num">Figure 4</p>
+  <p class="figure-caption-title">Smalltalk &mdash; Ride, StandardRide, and PremiumRide Class Definitions</p>
+  <img src="../screenshots/st_code.png" alt="Smalltalk Ride class and subclasses source code">
+  <p class="figure-note">Note. Instance variables have no accessor unless explicitly defined (encapsulation by default); <code>Ride subclass: #StandardRide</code> creates the subclass (inheritance); each subclass overrides <code>fare</code> (polymorphism).</p>
+</div>
+
+<div class="figure-block">
+  <p class="figure-caption-num">Figure 5</p>
+  <p class="figure-caption-title">Smalltalk &mdash; Sample Program Output</p>
+  <img src="../screenshots/st_output.png" alt="GNU Smalltalk program terminal output">
+  <p class="figure-note">Note. Output of <code>gst RideSharingSystem.st</code>, mirroring the C++ program's behavior via message sends instead of virtual function calls.</p>
+</div>
+
+</body>
+</html>
